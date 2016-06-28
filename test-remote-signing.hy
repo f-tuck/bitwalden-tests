@@ -29,12 +29,12 @@
 (print "signature length:" (len (base58.b58decode signed)))
 
 (print "Remote signing test")
-(let [[response (.json (requests.post api :params {"c" "verify" "k" verify-key-bytes "v" (str message) "s" (base58.b58decode signed)}))]]
+(let [[response (.json (requests.post api :params {"c" "authenticate" "k" verify-key-bytes "p" (str message) "s" (base58.b58decode signed)}))]]
   (print "Result:" response)
-  (assert (= (get response "result") True)))
+  (assert (= response True)))
 
 (print "Bad remote signature")
-(let [[response (.json (requests.post api :params {"c" "verify" "k" verify-key-bytes "v" (str (+ message "!")) "s" (base58.b58decode signed)}))]]
-  (print "Result" response)
-  (assert (= (get response "result") False)))
+(let [[response (.json (requests.post api :params {"c" "authenticate" "k" verify-key-bytes "p" (str (+ message "!")) "s" (base58.b58decode signed)}))]]
+  (print "Result:" response)
+  (assert (= response False)))
 
