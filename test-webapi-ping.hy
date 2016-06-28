@@ -1,6 +1,10 @@
-(import [requests])
-(import base58)
+(import
+  [requests]
+  [base58]
+  [utils [api]])
+(require utils)
 
-(def api "http://localhost:8923/sw/")
+(print "Pinging server")
+(let [[result (.json (requests.post api :params {"c" "ping"} :timeout 3))]]
+  (test-case (assert (= result "pong"))))
 
-(print (.json (requests.post api :params {"c" "ping"} :timeout 3)))

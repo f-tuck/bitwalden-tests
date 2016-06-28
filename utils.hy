@@ -1,4 +1,7 @@
-(import [requests])
+(import
+  [requests]
+  [hy.models.expression [HyExpression]]
+  [hy.models.string [HyString]])
 (require hy.contrib.loop)
 
 (def api "http://localhost:8923/sw/")
@@ -27,3 +30,14 @@
 (defn pop-messages-for-id [messages id]
   
   )
+
+(defn print-expression [expr]
+  (+ "(" (.join " " (list-comp (cond [(= (type x) HyExpression) (print-expression x)]
+                                 [(= (type x) HyString) (+ "\"" x "\"")]
+                                 [True (str x)]) [x expr])) ")"))
+
+(defmacro test-case [expr]
+  (quasiquote (do
+                (print (+ "Test: \t" (unquote (print-expression expr))))
+                (unquote expr)
+                (print "Pass:\t✔"))))
