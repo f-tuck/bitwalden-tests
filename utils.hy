@@ -2,12 +2,10 @@
   [requests]
   [hy.models.expression [HyExpression]]
   [hy.models.string [HyString]])
+
 (require hy.contrib.loop)
 
 (def api "http://localhost:8923/sw/")
-
-(defn raw [x]
-  (bytes (.encode x "utf8")))
 
 (defn assoc! [d k v]
   (assoc d k v)
