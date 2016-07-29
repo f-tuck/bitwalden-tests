@@ -3,3 +3,4 @@ virtualenv
 workspace
 build
 node_modules
+*.pyc
