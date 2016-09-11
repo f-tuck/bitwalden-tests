@@ -33,6 +33,9 @@
   
   )
 
+(defn with-timestamp [params]
+  (merge params {"t" (int (* (time) 1000))}))
+
 (defn with-signature [k params]
   (merge params {"s" (. (k.sign (bytes (bencode params))) signature)}))
 
