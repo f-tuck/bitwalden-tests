@@ -94,7 +94,10 @@ def encode_bool(x, r):
         encode_int(0, r)
         
 def encode_string(x, r):
-    r.extend((str(len(x)), ':', x))
+    r.extend((str(len(bytes(x))), ':', bytes(x)))
+
+def encode_unicode(x, r):
+    r.extend((str(len(bytes(x.encode("utf8")))), ':', bytes(x.encode("utf8"))))
 
 def encode_list(x, r):
     r.append('l')
@@ -117,7 +120,7 @@ encode_func[Bencached] = encode_bencached
 encode_func[IntType] = encode_int
 encode_func[LongType] = encode_int
 encode_func[StringType] = encode_string
-encode_func[UnicodeType] = encode_string
+encode_func[UnicodeType] = encode_unicode
 encode_func[ListType] = encode_list
 encode_func[TupleType] = encode_list
 encode_func[DictType] = encode_dict
