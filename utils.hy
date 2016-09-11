@@ -1,7 +1,9 @@
 (import
+  [time [time]]
   [requests]
   [hy.models.expression [HyExpression]]
-  [hy.models.string [HyString]])
+  [hy.models.string [HyString]]
+  [bencode [bencode]])
 
 (require hy.contrib.loop)
 
@@ -10,6 +12,8 @@
 (defn assoc! [d k v]
   (assoc d k v)
   d)
+
+(defn merge [d1 d2] (apply dict [d1] (or d2 {})))
 
 (defn wait-for-result [k]
   (loop []
@@ -29,6 +33,13 @@
   
   )
 
+(defn with-signature [k params]
+  (merge params {"s" (. (k.sign (bytes (bencode params))) signature)}))
+
+(defn verify-signature [k params]
+  (let [[signature (.pop params "s")]]
+    (k.verify (bytes (bencode params)) signature)))
+
 (defn print-expression [expr]
   (+ "(" (.join " " (list-comp (cond [(= (type x) HyExpression) (print-expression x)]
                                  [(= (type x) HyString) (+ "\"" x "\"")]
@@ -39,3 +50,4 @@
                 (print (+ "Test: \t" (unquote (print-expression expr))))
                 (unquote expr)
                 (print "Pass:\t✔"))))
+
