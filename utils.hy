@@ -6,6 +6,7 @@
   [hy.models.expression [HyExpression]]
   [hy.models.string [HyString]]
   [bencode [bencode]]
+  [base58 [b58encode b58decode]]
   [base64 [b64encode b64decode]])
 
 (require hy.contrib.loop)
@@ -18,16 +19,24 @@
 
 (defn merge [d1 d2] (apply dict [d1] (or d2 {})))
 
-(defn wait-for-result [k &optional [after 0]]
+(defn wait-for-result [signing-key id k &optional [after 0]]
   (loop []
     (import [time [sleep]])
-    ;(print "polling")
-    (let [[result (try (.json (requests.get api :params {"c" "get-queue" "k" k "after" after} :timeout 30)) (catch [e Exception]))]]
-      ;(print "From server:" result)
+    ;(print "wait-for-result polling")
+    (let [[result (try
+                    (post-to-api signing-key {"c" "get-queue" "u" id "k" k "after" after})
+                    (catch [e Exception]))]]
+      ;(print "wait-for-result from server:" result)
       (if (not result)
         (do (sleep 0.5)
           (recur))
         result))))
+
+(defn post-to-api [signing-key packet &optional [timeout 30]]
+  (let [[verify-key (b58encode (signing-key.verify_key.__bytes__))]]
+    (try
+      (.json (requests.post api :json (with-signature signing-key (with-timestamp packet)) :timeout timeout))
+      (catch [e Exception]))))
 
 (defn make-client-id []
   (.hexdigest (sha256 (str (random)))))
