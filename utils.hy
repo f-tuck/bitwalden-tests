@@ -11,13 +11,9 @@
 
 (require hy.contrib.loop)
 
+; *** Net
+
 (def api "http://localhost:8923/sw/")
-
-(defn assoc! [d k v]
-  (assoc d k v)
-  d)
-
-(defn merge [d1 d2] (apply dict [d1] (or d2 {})))
 
 (defn wait-for-result [signing-key id k &optional [after 0]]
   (loop []
@@ -38,11 +34,21 @@
       (.json (requests.post api :json (with-signature signing-key (with-timestamp packet)) :timeout timeout))
       (catch [e Exception]))))
 
+; *** Utils
+
+(defn assoc! [d k v]
+  (assoc d k v)
+  d)
+
+(defn merge [d1 d2] (apply dict [d1] (or d2 {})))
+
 (defn make-client-id []
   (.hexdigest (sha256 (str (random)))))
 
 (defn with-timestamp [params]
   (merge params {"t" (int (* (time) 1000))}))
+
+; *** Crypto
 
 (defn with-signature [k params]
   (merge params {"s" (b64encode (bytes (. (k.sign (bytes (bencode params))) signature)))}))
@@ -50,6 +56,8 @@
 (defn verify-signature [k params]
   (let [[signature (b64decode (.pop params "s"))]]
     (k.verify (bytes (bencode params)) signature)))
+
+; *** Test harness
 
 (defn print-expression [expr]
   (+ "(" (.join " " (list-comp (cond [(= (type x) HyExpression) (print-expression x)]
