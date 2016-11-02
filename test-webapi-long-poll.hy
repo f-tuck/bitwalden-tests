@@ -10,8 +10,7 @@
 
 (def seed "H33xgBQj5jTU6bKC5iw6B9docquvNpDeKoSSWkCpcU58")
 (def signing-key (SigningKey (b58decode seed)))
-(def verify-key-bytes (signing-key.verify_key.__bytes__))
-(def verify-key (b58encode verify-key-bytes))
+(def verify-key (b58encode (signing-key.verify_key.__bytes__)))
 
 (let [[message (bencode {(str "random-number") (str (random))})]
       [client-id (make-client-id)]]
