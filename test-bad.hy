@@ -1,3 +1,5 @@
 (require utils)
 
-(test-case (assert (= (this-symbol-is-not-defined) true)))
+(try
+  (test-case (assert (= (this-symbol-is-not-defined) true)))
+  (catch [NameError] (print "NameError thrown correctly.")))
