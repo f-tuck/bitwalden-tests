@@ -25,10 +25,14 @@
     (let [[[error dht-response-object] (get result-payloads 0)]
           [seq (get dht-response-object "seq")]
           [k (-> dht-response-object (get "k") (get "data") (bytearray) (str) (b58encode))]
-          [salt (-> dht-response-object (get "salt") (get "data") (bytearray))]]
+          [salt (-> dht-response-object (get "salt") (get "data") (bytearray))]
+          [value (-> dht-response-object (get "v") (get "data") (bytearray) (str) (bdecode))]]
       (test-case (assert (= error nil)))
       (test-case (assert (= k verify-key)))
-      (test-case (assert (> seq 0))))
+      (test-case (assert (> seq 0)))
+      (print "DHT seq:" seq)
+      (print "DHT salt" salt)
+      (print "DHT contents:" value))
     (print "Truncating messages.")
     (let [[response (post-to-api signing-key {"c" "get-queue" "k" verify-key "u" client-id "after" last-timestamp} :timeout 3)]]
       (test-case (assert (= response nil))))))
