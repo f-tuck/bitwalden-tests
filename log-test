@@ -1,0 +1,15 @@
+#!/bin/sh
+
+export PYTHONIOENCODING="utf_8"
+
+if [ "$2" != "" ]
+then
+  result=`./virtualenv/bin/hy "${1}" 2>&1`
+  returncode=$?
+  echo "${result}"
+  if [ $returncode = 0 ]
+  then
+    echo "${result}" > "${2}"
+  fi
+  exit ${returncode}
+fi
