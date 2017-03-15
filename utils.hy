@@ -1,4 +1,5 @@
 (import
+  [os [environ]]
   [random [random]]
   [time [time]]
   [hashlib [sha256 sha1]]
@@ -14,7 +15,7 @@
 
 ; *** Net
 
-(def api "http://localhost:8923/sw/")
+(def api (.get environ "BWSERVER" "http://localhost:8923/sw/"))
 
 (defn wait-for-result [signing-key id k &optional [after 0]]
   (loop []
