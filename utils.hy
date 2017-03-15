@@ -69,6 +69,15 @@
 (defn dht-address [k salt]
   (.hexdigest (sha1 (+ (bytes salt) (b58decode k)))))
 
+(defn compute-infohash [content-name content]
+  (let [[length 16384] ; webtorrent default piece length
+        [pieces (.join (bytes "") (list-comp (.digest (sha1 (slice (bytes content) (+ 0 i) (+ length i)))) [i (range 0 (len (bytes content)) length)]))]
+        [info {"length" (len (bytes content))
+               "piece length" length
+               "pieces" pieces
+               "name" (bytes content-name)}]]
+    (.hexdigest (sha1 (bencode info)))))
+
 ; *** Test harness
 
 (defn print-expression [expr]
