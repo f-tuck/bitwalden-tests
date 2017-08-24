@@ -1,4 +1,4 @@
-TESTS=bad bencode keys dht-address raw-signing parameter-signing webapi-ping webapi-signed-authentication webapi-long-poll 
+TESTS=bad bencode keys dht-address raw-signing parameter-signing webapi-ping webapi-signed-authentication webapi-long-poll webapi-dht webapi-seed webapi-retrieve
 
 all: $(TESTS:%=logs/test-%.log)
 
