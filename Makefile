@@ -5,13 +5,17 @@ all: $(TESTS:%=logs/test-%.log)
 logs:
 	mkdir logs
 
-logs/%.log: %.hy logs
+logs/%.log: %.hy logs virtualenv/bin/hy
 	@echo
 	@echo "***** $< > $@ *****"
 	@./log-test $< $@
 
+virtualenv/bin/hy: requirements.txt
+	@virtualenv virtualenv
+	. ./virtualenv/bin/activate && pip install -r requirements.txt
+
 .PHONY: clean
 
 clean:
-	rm -rf logs
+	rm -rf logs virtualenv
 
