@@ -4,7 +4,7 @@
   [requests]
   [nacl.signing [SigningKey VerifyKey]]
   [nacl.encoding [HexEncoder]]
-  [utils [api with-timestamp with-signature merge]]
+  [utils [rpc with-timestamp with-signature merge]]
   [bencode [bencode]])
 
 (require utils)
@@ -33,18 +33,18 @@
 (print "Checking signature length")
 (test-case (assert (= (len (b58decode signed)) 64)))
 
-(def params (with-timestamp {"c" "authenticate" "k" verify-key "p" message}))
+(def params (with-timestamp {"k" verify-key "p" message}))
 (def signed-params (with-signature signing-key params))
 
 ; (print "signed-params" signed-params)
 ; (print (bencode signed-params))
 
 (print "Remote signing test")
-(let [[response (.json (requests.post api :json signed-params))]]
+(let [[response (apply rpc.authenticate [] signed-params)]]
   (test-case (assert (= response True))))
 
 (print "Mutated message signature failure test")
-(let [[response (.json (requests.post api :json (merge signed-params {"p" "hellooo!"})))]]
+(let [[response (apply rpc.authenticate [] (merge signed-params {"p" "hellooo!"}))]]
   (test-case (assert (= response False))))
 
 

@@ -4,6 +4,7 @@
   [time [time]]
   [hashlib [sha256 sha1]]
   [requests]
+  [jsonrpclib]
   [hy.models.expression [HyExpression]]
   [hy.models.string [HyString]]
   [nacl.signing [SigningKey]]
@@ -16,6 +17,8 @@
 ; *** Net
 
 (def api (.get environ "BWSERVER" "http://localhost:8923/sw/"))
+
+(def rpc (jsonrpclib.Server (+ api "rpc")))
 
 (defn wait-for-result [signing-key id k &optional [after 0]]
   (loop []

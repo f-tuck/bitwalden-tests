@@ -1,10 +1,11 @@
 (import
   [requests]
   [base58]
-  [utils [api]])
+  [utils [rpc]])
+
 (require utils)
 
 (print "Pinging server")
-(let [[result (.json (requests.post api :json {"c" "ping"} :timeout 3))]]
-  (test-case (assert (= result "pong"))))
-
+(let [[result (rpc.ping :hello 42)]]
+  (test-case (assert (= (get result "hello") 42)))
+  (test-case (assert (= (get result "pong") true))))
