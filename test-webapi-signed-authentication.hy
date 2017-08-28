@@ -40,11 +40,11 @@
 ; (print (bencode signed-params))
 
 (print "Remote signing test")
-(let [[response (apply rpc.authenticate [] signed-params)]]
+(let [[response (rpc "authenticate" signed-params)]]
   (test-case (assert (= response True))))
 
 (print "Mutated message signature failure test")
-(let [[response (apply rpc.authenticate [] (merge signed-params {"p" "hellooo!"}))]]
+(let [[response (rpc "authenticate" (merge signed-params {"p" "hellooo!"}))]]
   (test-case (assert (= response False))))
 
 

@@ -18,7 +18,11 @@
 
 (def api (.get environ "BWSERVER" "http://localhost:8923/sw/"))
 
-(def rpc (jsonrpclib.Server (+ api "rpc")))
+(def rpc (let [[s (jsonrpclib.Server (+ api "rpc"))]]
+           (fn [method params]
+             (cond
+               [(= (type params) dict) (apply (getattr s method) [] params)]
+               [(= (type params) list) (apply (getattr s method) params)]))))
 
 (defn wait-for-result [signing-key id k &optional [after 0]]
   (loop []

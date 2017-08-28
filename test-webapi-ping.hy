@@ -6,6 +6,7 @@
 (require utils)
 
 (print "Pinging server")
-(let [[result (rpc.ping :hello 42)]]
+(let [[result (rpc "ping" {"hello" 42})]]
+  (print "Result:" result)
   (test-case (assert (= (get result "hello") 42)))
   (test-case (assert (= (get result "pong") true))))
