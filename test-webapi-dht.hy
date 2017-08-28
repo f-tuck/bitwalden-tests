@@ -29,7 +29,7 @@
       [address (dht-address verify-key salt)]
       [params-get {"c" "dht-get" "k" verify-key "u" client-id}]
       [response-get (post-to-api signing-key (-> {"infohash" address} (merge params-get)))]]
-  (print "Get request sent.")
+  (print "Get request sent to:" address)
   (test-case (assert (= response-get True)))
   (let [[[last-timestamp error response-vals] (parse-get-response (wait-for-result signing-key client-id verify-key))]
         [[seq-get k salt-get value-get] response-vals]]
@@ -52,11 +52,10 @@
           [message-put (bencode value)]
           [seq-put (+ seq-get 1)]
           [dht-params {"seq" seq-put "salt" salt "v" message-put}]
-          [_ (print dht-params)]
           [dht-sig (dht-compute-sig signing-key dht-params)]
           [params-put {"c" "dht-put" "k" verify-key "u" client-id}]
           [response-put (post-to-api signing-key (-> {"s.dht" dht-sig "after" last-timestamp} (merge dht-params) (merge params-put)))]]
-      (print "Put request sent.")
+      (print "Put request sent:" dht-params)
       (test-case (assert (= response-put True)))
       (let [[results (wait-for-result signing-key client-id verify-key)]
             [result-payloads (list-comp (get r "payload") [r results])]
