@@ -11,8 +11,9 @@ logs/%.log: %.hy logs virtualenv/bin/hy
 	@./log-test $< $@
 
 virtualenv/bin/hy: requirements.txt
-	@virtualenv virtualenv
+	virtualenv virtualenv
 	. ./virtualenv/bin/activate && pip install -r requirements.txt
+	touch virtualenv/bin/hy
 
 .PHONY: clean
 
