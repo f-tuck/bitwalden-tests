@@ -71,7 +71,7 @@
     (k.verify (bytes (bencode params)) signature)))
 
 (defn dht-address [k salt]
-  (.hexdigest (sha1 (+ (bytes salt) (b58decode k)))))
+  (.hexdigest (sha1 (+ (b58decode k) (bytes salt)))))
 
 (defn compute-infohash [content-name content]
   (let [[length 16384] ; webtorrent default piece length
