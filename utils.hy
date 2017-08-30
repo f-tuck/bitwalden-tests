@@ -24,6 +24,10 @@
                [(= (type params) dict) (apply (getattr s method) [] params)]
                [(= (type params) list) (apply (getattr s method) params)]))))
 
+(defn rpc-signed [method signing-key params]
+  (let [[verify-key (b58encode (signing-key.verify_key.__bytes__))]]
+    (rpc method (merge (with-signature signing-key (with-timestamp params)) {"k" verify-key}))))
+
 (defn wait-for-result [signing-key id k &optional [after 0]]
   (loop []
     (import [time [sleep]])
