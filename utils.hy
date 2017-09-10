@@ -10,7 +10,7 @@
   [nacl.signing [SigningKey]]
   [bencode [bencode]]
   [base58 [b58encode b58decode]]
-  [base64 [b64encode b64decode]])
+  [binascii [hexlify unhexlify]])
 
 (require hy.contrib.loop)
 
@@ -69,13 +69,13 @@
     [signing-key verify-key]))
 
 (defn dht-compute-sig [k params]
-  (b64encode (bytes (. (k.sign (bytes (slice (bencode params) 1 -1))) signature))))
+  (hexlify (bytes (. (k.sign (bytes (slice (bencode params) 1 -1))) signature))))
 
 (defn with-signature [k params]
-  (merge params {"s" (b64encode (bytes (. (k.sign (bytes (bencode params))) signature)))}))
+  (merge params {"s" (hexlify (bytes (. (k.sign (bytes (bencode params))) signature)))}))
 
 (defn verify-signature [k params]
-  (let [[signature (b64decode (.pop params "s"))]]
+  (let [[signature (unhexlify (.pop params "s"))]]
     (k.verify (bytes (bencode params)) signature)))
 
 (defn dht-address [k salt]
