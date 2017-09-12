@@ -13,7 +13,7 @@
 (def seed "H33xgBQj5jTU6bKC5iw6B9docquvNpDeKoSSWkCpcU58")
 
 (let [[[signing-key verify-key] (extract-keys seed)]
-      [content-name "test-post.txt"]
+      [content-name "unenumerated.rss"]
       [content (.read (file "unenumerated.rss"))]
       [seed-params {"name" content-name "content" content}]
       [expected-infohash (compute-infohash content-name content)]]
