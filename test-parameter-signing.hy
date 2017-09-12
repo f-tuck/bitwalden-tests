@@ -3,8 +3,7 @@
   [nacl.signing [SigningKey VerifyKey]]
   [nacl.encoding [HexEncoder]]
   [utils [merge with-timestamp with-signature verify-signature]]
-  [bencode [bencode]]
-  [base64 [b64decode]])
+  [bencode [bencode]])
 
 (require utils)
 
@@ -30,8 +29,9 @@
 (def signed-params (with-signature signing-key fixed-timestamped-params))
 (print signed-params)
 (test-case (assert (in "s" signed-params)))
-(test-case (assert (= (len (-> signed-params (get "s") (b64decode))) 64)))
-(test-case (assert (= (get signed-params "s") "dGz9zxSK0Emj5aTXAdQjSmUXJPAG/dr/piKoasa/gJGqF2+tttjtJUN6cAfQ1D1b2fsQuBsuS3wSiJ88MTp1CA==")))
+(let [[sig (get signed-params "s")]]
+  (test-case (assert (= (len (-> signed-params (get "s"))) 128)))
+  (test-case (assert (= (get signed-params "s") "746cfdcf148ad049a3e5a4d701d4234a651724f006fddaffa622a86ac6bf8091aa176fadb6d8ed25437a7007d0d43d5bd9fb10b81b2e4b7c12889f3c313a7508"))))
 (test-case (assert (= verify-key (get signed-params "k"))))
 
 (print "Test verify signed params.")
