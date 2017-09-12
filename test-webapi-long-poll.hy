@@ -18,7 +18,7 @@
     (for [message messages]
       (print "Sending:" message)
       (let [[response (rpc-signed "client-test" signing-key {"u" client-id "p" (bencode message)})]]
-        (test-case (assert (= response True)))))
+        (test-case (assert (= response client-id)))))
     (print "Sleeping: for" timeout)
     (sleep timeout)
     (print "Waiting: for result")
