@@ -2,10 +2,10 @@ TESTS=bad bencode keys dht-address raw-signing parameter-signing webapi-ping web
 
 all: $(TESTS:%=logs/test-%.log)
 
-logs:
-	mkdir logs
+logs/.created:
+	mkdir -p logs && touch logs/.created
 
-logs/%.log: %.hy logs virtualenv/bin/hy
+logs/%.log: %.hy logs/.created virtualenv/bin/hy
 	@echo
 	@echo "***** $< > $@ *****"
 	@./log-test $< $@
