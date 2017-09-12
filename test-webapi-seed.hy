@@ -18,7 +18,7 @@
       [seed-params {"name" content-name "content" content}]
       [expected-infohash (compute-infohash content-name content)]]
   (print "Expecting infohash:" expected-infohash)
-  (let [[[error infohash] (rpc-signed "seed" signing-key seed-params)]]
+  (let [[[error infohash] (rpc-signed "torrent-seed" signing-key seed-params)]]
     (print "Got:" infohash)
     
     (test-case (assert (= error nil)))
