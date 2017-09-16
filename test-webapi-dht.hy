@@ -11,18 +11,6 @@
 
 (def seed "H33xgBQj5jTU6bKC5iw6B9docquvNpDeKoSSWkCpcU58")
 
-(defn parse-get-response [results]
-  (let [[result-payloads (list-comp (get r "payload") [r results])]
-        [last-timestamp (max (list-comp (get r "timestamp") [r results]))]
-        [[error dht-response-object-get] (get result-payloads 0)]]
-    [last-timestamp error
-     (if dht-response-object-get
-       [(get dht-response-object-get "seq")
-        (-> dht-response-object-get (get "k") (get "data") (bytearray) (str) (b58encode))
-        (-> dht-response-object-get (get "salt") (get "data") (bytearray))
-        (-> dht-response-object-get (get "v") (get "data") (bytearray) (str) (bdecode))]
-       [-1 nil nil nil])]))
-
 (let [[[signing-key verify-key] (extract-keys seed)]
       [salt "sw.profile"]
       [address (dht-address verify-key salt)]
