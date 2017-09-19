@@ -16,7 +16,7 @@
 
 ; *** Net
 
-(def api (.get environ "BWSERVER" "http://localhost:8923/sw/"))
+(def api (.get environ "BWSERVER" "http://localhost:8923/bw/"))
 
 (def rpc (let [[s (jsonrpclib.Server (+ api "rpc"))]]
            (fn [method params]

@@ -12,7 +12,7 @@
 (def seed "H33xgBQj5jTU6bKC5iw6B9docquvNpDeKoSSWkCpcU58")
 
 (let [[[signing-key verify-key] (extract-keys seed)]
-      [salt "sw.profile"]
+      [salt "bw.profile"]
       [address (dht-address verify-key salt)]
       [[get-error response-get] (rpc-signed "dht-get" signing-key {"infohash" address})]
       [response-get (or response-get {})]]
