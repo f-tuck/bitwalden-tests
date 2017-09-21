@@ -28,25 +28,6 @@
   (let [[verify-key (b58encode (signing-key.verify_key.__bytes__))]]
     (rpc method (merge (with-signature signing-key (with-timestamp params)) {"k" verify-key}))))
 
-(defn wait-for-result [signing-key id k &optional [after 0]]
-  (loop []
-    (import [time [sleep]])
-    ;(print "wait-for-result polling")
-    (let [[result (try
-                    (post-to-api signing-key {"c" "get-queue" "u" id "k" k "after" after})
-                    (catch [e Exception]))]]
-      ;(print "wait-for-result from server:" result)
-      (if (not result)
-        (do (sleep 0.5)
-          (recur))
-        result))))
-
-(defn post-to-api [signing-key packet &optional [timeout 30]]
-  (let [[verify-key (b58encode (signing-key.verify_key.__bytes__))]]
-    (try
-      (.json (requests.post api :json (with-signature signing-key (with-timestamp packet)) :timeout timeout))
-      (catch [e Exception]))))
-
 ; *** Utils
 
 (defn assoc! [d k v]

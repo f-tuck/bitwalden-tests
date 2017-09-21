@@ -3,7 +3,7 @@
   [base58 [b58encode b58decode]]
   [bencode [bencode bdecode]]
   [nacl.signing [SigningKey]]
-  [utils [rpc-signed wait-for-result make-client-id with-timestamp with-signature extract-keys dht-compute-sig merge dht-address]]
+  [utils [rpc-signed make-client-id with-timestamp with-signature extract-keys dht-compute-sig merge dht-address]]
   [random [random]]
   [binascii [hexlify]]
   [time [sleep]])
