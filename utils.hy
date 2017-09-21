@@ -16,7 +16,8 @@
 
 ; *** Net
 
-(def api (.get environ "BWSERVER" "http://localhost:8923/bw/"))
+(def bwserver (.get environ "BWSERVER" "http://localhost:8923/"))
+(def api (+ bwserver "bw/"))
 
 (def rpc (let [[s (jsonrpclib.Server (+ api "rpc"))]]
            (fn [method params]
@@ -27,6 +28,9 @@
 (defn rpc-signed [method signing-key params]
   (let [[verify-key (b58encode (signing-key.verify_key.__bytes__))]]
     (rpc method (merge (with-signature signing-key (with-timestamp params)) {"k" verify-key}))))
+
+(defn get-json [path]
+  (.json (requests.get (+ bwserver path))))
 
 ; *** Utils
 
