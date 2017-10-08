@@ -1,6 +1,7 @@
 (import
   [base58]
-  [nacl.public [PrivateKey PublicKey Box]])
+  [nacl.public [PrivateKey PublicKey Box]]
+  [binascii [hexlify unhexlify]])
 
 (require utils)
 
@@ -8,8 +9,8 @@
 (def newkey (PrivateKey.generate))
 (def secret_key (PrivateKey (base58.b58decode seed)))
 
-(print "old seed & key:")
-(print seed)
+(print "Seed:" seed)
+(print "Seed (hex):" (hexlify (bytes (base58.b58decode seed))))
 (test-case (assert (= (base58.b58encode (secret_key.public_key.__bytes__)) "J7XiSVRjegseCQpJyhHDjKkkRDbCNu3WCywJj6kYvVzX")))
 
 (print "freshly generated keys:")
