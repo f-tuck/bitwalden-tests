@@ -14,10 +14,10 @@
 (let [[[signing-key verify-key] (extract-keys seed)]
       [salt "bw.profile"]
       [address (dht-address verify-key salt)]
-      [[get-error response-get] (rpc-signed "dht-get" signing-key {"infohash" address})]
-      [response-get (or response-get {})]]
+      [response-get (or (rpc-signed "dht-get" signing-key {"addresshash" address}) {})]
+      [error-get (.get response-get "error" nil)]]
   (print "Get request sent to:" address)
-  (test-case (assert (= get-error nil)))
+  (test-case (assert (= error-get nil)))
 
   (let [[seq-get (.get response-get "seq" 0)]
         [k-get (.get response-get "k" None)]
@@ -42,17 +42,21 @@
           [dht-sig (dht-compute-sig signing-key dht-params)]
           [put-params (merge dht-params {"s.dht" dht-sig})]
           [address (dht-address verify-key (get dht-params "salt"))] 
-          [[error put-infohash put-nodes-count] (rpc-signed "dht-put" signing-key put-params)]]
+          [put-response (rpc-signed "dht-put" signing-key put-params)]
+          [put-addresshash (.get put-response "addresshash" nil)]
+          [put-nodes-count (.get put-response "nodecount" nil)]
+          [put-error (.get put-response "error" nil)]]
       (print "Put request sent:")
+      (print "DHT sig:" dht-sig)
       (print put-params)
       (print "DHT put node count:" put-nodes-count)
-      (print "DHT put address:" put-infohash)
-      (test-case (assert (= get-error nil)))
-      (test-case (assert (= address put-infohash)))
+      (print "DHT put address:" put-addresshash)
+      (test-case (assert (= put-error nil)))
+      (test-case (assert (= address put-addresshash)))
       (test-case (assert (> put-nodes-count 0)))
 
-      (let [[[get-error response-get] (rpc-signed "dht-get" signing-key {"infohash" address})]
-            [response-get (or response-get {})]
+      (let [[response-get (or (rpc-signed "dht-get" signing-key {"addresshash" address}) {})]
+            [error-get (.get response-get "error" nil)]
             [seq-get (.get response-get "seq" 0)]
             [k-get (.get response-get "k" None)]
             [salt-get (.get response-get "salt" nil)]
@@ -63,7 +67,7 @@
         (print "DHT new contents:" value-get)
 
         ; check GET request value
-        (test-case (assert (= error nil)))
+        (test-case (assert (= error-get nil)))
         (test-case (assert (= k-get verify-key)))
         (test-case (assert (= seq-get seq-put)))
         (test-case (assert (= value-get value-put)))))
@@ -78,17 +82,17 @@
           ;[dht-sig (dht-compute-sig signing-key dht-params)]
           ;[put-params (merge dht-params {"s.dht" dht-sig})]
           ;[address (dht-address verify-key (get dht-params "salt"))] 
-          ;[[error put-infohash put-nodes-count] (rpc-signed "dht-put" signing-key put-params)]]
+          ;[[error put-addresshash put-nodes-count] (rpc-signed "dht-put" signing-key put-params)]]
       ;(print "Put request sent:")
       ;(print put-params)
       ;(print "DHT put node count:" put-nodes-count)
-      ;(print "DHT put address:" put-infohash)
+      ;(print "DHT put address:" put-addresshash)
       ;(print "DHT error:" error)
       ;(test-case (assert (!= get-error nil)))
-      ;(test-case (assert (= address put-infohash)))
+      ;(test-case (assert (= address put-addresshash)))
       ;(test-case (assert (= put-nodes-count 0)))
 
-      ;(let [[[get-error response-get] (rpc-signed "dht-get" signing-key {"infohash" address})]
+      ;(let [[[get-error response-get] (rpc-signed "dht-get" signing-key {"addresshash" address})]
             ;[response-get (or response-get {})]
             ;[seq-get (.get response-get "seq" 0)]
             ;[k-get (.get response-get "k" None)]
