@@ -27,7 +27,7 @@
 
 (defn rpc-signed [method signing-key params]
   (let [[verify-key (b58encode (signing-key.verify_key.__bytes__))]]
-    (rpc method (merge (with-signature signing-key (with-timestamp params)) {"k" verify-key}))))
+    (rpc method (with-signature signing-key (with-timestamp (merge params {"k" verify-key}))))))
 
 (defn get-json [path]
   (.json (requests.get (+ bwserver path))))
