@@ -26,31 +26,23 @@
     (print "Got:" infohash)
     (test-case (assert (= error nil)))
     (test-case (assert (= infohash expected-infohash)))
+
     (print "Stored at:" (% "magnet:?xt=urn:btih:%s" infohash))
     
     ; now that we have seeded the file, attempt to download it
     (let [[client-id (make-client-id)]
           [params {"u" client-id "infohash" expected-infohash}]
-          [fetch-client-id (rpc-signed "torrent-fetch-queued" signing-key params)]]
-      (test-case (assert (= client-id fetch-client-id)))
+          [fetch-result (rpc-signed "torrent-fetch" signing-key params)]]
+      
+      (test-case (assert (= (get fetch-result "download") "done")))
+      (test-case (assert (> (len (get fetch-result "files")) 0)))
+      
+      (print "fetch-result" fetch-result)
 
-      (loop [[last-timestamp 0]]
-        (let [[results (rpc-signed "get-queue" signing-key {"u" client-id "after" last-timestamp})]
-              [result-payloads (list-comp (get r "payload") [r results])]
-              [timestamps (list-comp (get r "timestamp") [r results])]
-              [last-timestamp-new (if timestamps (max timestamps) nil)]
-              [done (list-comp f [f result-payloads] (= (get f "download") "done"))]]
-          (print "Payloads:" result-payloads)
-          (print "Timestamps:" timestamps)
-          (test-case (assert (!= last-timestamp-new nil)))
-          (if done
-            (do
-              (let [[url (+ api "content/" infohash "/" (-> done (get 0) (get "files") (get 0) (get "path")))]]
+      (let [[file (-> fetch-result (get "files") (get 0) (get "path"))]
+             [path (get fetch-result "path")]
+             [url (+ api path file)]]
                 (print "Downloading:" url)
                 (let [[response-text (. (requests.get url) text)]]
-                  (test-case (assert (= response-text (.decode content "utf8"))))))
-              (print "Truncating messages after" last-timestamp-new)
-              (let [[response (rpc-signed "get-queue" signing-key {"u" client-id "after" last-timestamp-new "timeout" 1000})]]
-                (test-case (assert (= response [])))))
-            (recur last-timestamp-new)))))))
+                  (test-case (assert (= response-text (.decode content "utf8")))))))))
 

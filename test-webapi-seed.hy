@@ -21,7 +21,8 @@
   (let [[result (rpc-signed "torrent-seed" signing-key seed-params)]
         [infohash (.get result "infohash" nil)]
         [error (.get result "error" nil)]]
-    (print "Got:" infohash)
+    (print "Got:" result)
+    (test-case (assert (get result "path")))
     (test-case (assert (= error nil)))
     (test-case (assert (= infohash expected-infohash)))
     (print "Stored at:" (% "magnet:?xt=urn:btih:%s" infohash))))
