@@ -41,10 +41,12 @@
 
 (print "Remote signing test")
 (let [[response (rpc "authenticate" signed-params)]]
+  (print "Response:" response)
   (test-case (assert (= response True))))
 
 (print "Mutated message signature failure test")
 (let [[response (rpc "authenticate" (merge signed-params {"p" "hellooo!"}))]]
+  (print "Response:" response)
   (test-case (assert (= (.get response "error" nil) True)))
   (test-case (assert (= (.get response "code" nil) 401))))
 
