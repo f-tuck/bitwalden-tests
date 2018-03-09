@@ -1,4 +1,5 @@
 (import
+  [time [sleep]]
   [requests]
   [base58 [b58encode b58decode]]
   [bencode [bencode bdecode]]
@@ -12,7 +13,7 @@
 (def seed "H33xgBQj5jTU6bKC5iw6B9docquvNpDeKoSSWkCpcU58")
 
 (let [[[signing-key verify-key] (extract-keys seed)]
-      [salt "bw.profile"]
+      [salt "bw-profile"]
       [address (dht-address verify-key salt)]
       [response-get (or (rpc-signed "dht-get" signing-key {"addresshash" address "salt" salt}) {})]
       [error-get (.get response-get "error" nil)]]
@@ -58,6 +59,10 @@
       (test-case (assert (= address put-addresshash)))
       (test-case (assert (> put-nodes-count 0)))
 
+      (print "Sleeping for 3 seconds.")
+      (sleep 3)
+      (print "Checking updated DHT.")
+      
       (let [[response-get (or (rpc-signed "dht-get" signing-key {"addresshash" address "salt" salt}) {})]
             [error-get (.get response-get "error" nil)]
             [seq-get (.get response-get "seq" 0)]
